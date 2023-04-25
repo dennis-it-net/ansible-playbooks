@@ -1,0 +1,23 @@
+---
+- name: Allow Ports in UFW
+  hosts: all
+  become: yes
+  tasks:
+    - name: Allow #add service# port
+      ufw:
+        rule: allow
+        port: #add port number#
+
+    - name: Allow #add service 2 port
+      ufw:
+        rule: allow
+        port: #add port number
+
+    - name: Allow #add service 3# port
+      ufw:
+        rule: allow
+        port: #add port number
+
+    - name: Reload UFW
+      ufw:
+        state: reloaded
