@@ -1,0 +1,47 @@
+---
+- name: Install and configure Filebeat on Ubuntu
+  hosts: all
+  become: true
+
+  tasks:
+    # Install the necessary packages
+    - name: Install apt-transport-https and curl
+      apt:
+        name:
+          - apt-transport-https
+          - curl
+        state: present
+
+    # Add Elastic’s signing key to APT
+    - name: Add Elastic signing key
+      apt_key:
+        url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+        state: present
+
+    # Add the Elastic package source list
+    - name: Add Elastic package source
+      apt_repository:
+        repo: deb https://artifacts.elastic.co/packages/7.x/apt stable main
+        state: present
+        filename: elastic-7.x
+
+    # Install Filebeat
+    - name: Install Filebeat
+      apt:
+        name: filebeat
+        state: present
+
+    # Copy the configuration file to the server
+    - name: Copy Filebeat configuration file
+      copy:
+        src: #location of the filebeat config/template you want to copy
+        dest: /etc/filebeat/filebeat.yml
+        mode: 0644
+      notify: restart Filebeat
+
+  handlers:
+    # Restart Filebeat after the configuration file has been updated
+    - name: restart Filebeat
+      service:
+        name: filebeat
+        state: restarted
