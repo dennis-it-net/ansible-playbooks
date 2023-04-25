@@ -1,0 +1,32 @@
+-
+  name: Install zabbix-agent and enable and start service
+  hosts: all
+  become: yes
+  tasks:
+    - name: Get zabbix debian file
+      command: wget https://repo.zabbix.com/zabbix/5.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_5.0-1+focal_all.deb #or the file for your zabbix version
+    - name: Install zabbix debian package
+      command: dpkg -i zabbix-release_5.0-1+focal_all.deb #or the file for your zabbix version
+    - name: Update apt cache and install zabbix-agent
+      apt:
+        update_cache: yes
+        name: zabbix-agent
+    - name: Enable and start zabbix-agent service
+      service:
+        name: zabbix-agent
+        enabled: yes
+    - name: Modify Zabbix config
+      script: /usr/ansible/script-zabbix-config.sh #a script that echoes customized zabbix agent config - with server name, server active name, etc. modified
+    - name: Restart zabbix-agent service
+      service:
+        name: zabbix-agent
+        state: restarted
+    - name: Update Zabbix Agent configuration file
+      lineinfile:
+        path: /etc/zabbix/zabbix_agentd.conf
+        regexp: '^Hostname='
+        line: 'Hostname={{ inventory_hostname }}'
+    - name: Restart Zabbix Agent service
+      service:
+        name: zabbix-agent
+        state: restarted
