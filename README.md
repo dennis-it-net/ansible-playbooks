@@ -1,2 +1,2 @@
 # ansible-playbooks
-List of some ansible playbooks and scripts for devops
+Some ansible playbooks and scripts for devops
